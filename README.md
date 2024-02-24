@@ -1,2 +1,2 @@
 # GamesOnWeb
-A TypeScript game programmed on Babylon.js, Games on the Web is a yearly programming competition within the Cote d'Azur of France where students of different universities create a game within the limits of their creativity on Babylon.js. This year's theme: Olympic Games.
+In the radiant milieu of the Côte d'Azur in France, Games on the Web unfolds as an annual celebration of ingenuity and skill, where budding talents from diverse universities craft captivating experiences through the medium of TypeScript and Babylon.js. Embracing this year's theme of the Olympic Games, participants are poised to sculpt immersive digital realms, each a testament to their boundless creativity.
