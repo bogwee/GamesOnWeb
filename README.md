@@ -4,4 +4,4 @@ In the radiant milieu of the Côte d'Azur in France, Games on the Web unfolds as
 # 🕹🃏JO 'J' 'O'🃏🎮 
   - Patel Lucah
   - Garoux Ewan
-  - Lokman Roman
+  - Lokmane Roman
