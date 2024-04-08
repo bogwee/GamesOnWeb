@@ -1,0 +1,4 @@
+node_modules
+src/customModels.ts
+src/createScene.ts
+src/firstScene.ts
