@@ -5,17 +5,17 @@
 ### **Project Setup**
 ***
 
-#### __create a project from template (using Vite and TypeScript)__
+#### _create a project from template (using Vite and TypeScript)_
 ``` 
 npm create babylon-app
 ```
 
-#### __install dependencies__
+#### _install dependencies_
 ```
 npm i
 ```
 
-#### __launch dev server__
+#### _launch dev server_
 ```
 npm run dev
 ```
