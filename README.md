@@ -7,7 +7,7 @@
 
 #### _create a project from template (using Vite and TypeScript)_
 ``` 
-npm create babylon-app
+npm create vite@latest
 ```
 
 #### _install dependencies_
