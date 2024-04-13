@@ -1,32 +1,32 @@
 # BABYLOBJS ~~JOJO~~ 
 ***
 
-__Hi there, this is a fun little game about climbing. If you want to play it follow the steps bellow. If you're interested in setting up your own development environment scroll down, there is a section just for that it will guides you threw the different steps.__
+_Hi there, this is a fun little game about climbing. If you want to play it follow the steps bellow. If you're interested in setting up your own development environment scroll down, there is a section just for that it will guides you threw the different steps._
 
 ### **Games Setup**
 ***
 
-#### __Clone Git repository__
+#### _Clone Git repository_
 ``` 
 git clone https://github.com/bogwee/GamesOnWeb.git
 ```
 
-#### __Move to Game Directory__
+#### _Move to Game Directory_
 ```
 cd GamesOnWeb
 ```
 
-#### __Install modules__
+#### _Install modules_
 ```
 npm i
 ```
 
-#### __Install BabylonJS core and loaders__
+#### _Install BabylonJS core and loaders_
 ```
 npm i @babylonjs/core @babylonjs/loaders
 ```
 
-#### __Run the game__
+#### _Run the game_
 ```
 npm run dev
 ```
@@ -37,24 +37,24 @@ npm run dev
 
 #### 1. download Node.js
 
-#### 2. __Create Project Template from Vite + Vue + TypeScript__
+#### 2. _Create Project Template from Vite + Vue + TypeScript_
 ``` 
 npm create vite@latest
 ```
 
 #### 3. Select your Project `Name` then your Framework in this case its `Vue` and finally your language, `TypeScript`
 
-#### 4. __Move to your Project Directory__
+#### 4. _Move to your Project Directory_
 ```
 cd Project-Name
 ```
 
-#### 5. __Install modules__
+#### 5. _Install modules_
 ```
 npm i
 ```
 
-#### 6. __Install BabylonJS core and loaders__
+#### 6. _Install BabylonJS core and loaders_
 ```
 npm i @babylonjs/core @babylonjs/loaders
 ```
@@ -71,7 +71,7 @@ Project-Name:.
 └───src
 ```
 
-#### 8. __Run the game__
+#### 8. _Run the game_
 ```
 npm run dev
 ```
