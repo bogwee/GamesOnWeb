@@ -6,7 +6,7 @@ _Hi there, this is a fun little game about climbing. If you want to play it foll
 ***
 ### **Game Setup**
 ***
-<br>llo<br/>
+<br><br/>
 #### _Clone Git Repository_
 ``` 
 git clone https://github.com/bogwee/GamesOnWeb.git
