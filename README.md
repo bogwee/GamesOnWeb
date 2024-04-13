@@ -3,7 +3,7 @@
 _Hi there, this is a fun little game about climbing. If you want to play it follow the steps bellow. If you're interested in setting up your own development environment scroll down, there is a section just for that it will guide you threw the different steps._
 
 ***
-### **Games Setup**
+### **Game Setup**
 ***
 
 #### _Clone Git Repository_
