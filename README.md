@@ -6,6 +6,7 @@ _Hi there, this is a fun little game about climbing. If you want to play it foll
 ***
 ### **Game Setup**
 ***
+<br><br/>
 #### _Clone Git Repository_
 ``` 
 git clone https://github.com/bogwee/GamesOnWeb.git
@@ -35,6 +36,7 @@ npm run dev
 ***
 ### **Development Environment Setup**
 ***
+<br><br/>
 #### 1. Download Node.js
 <br><br/>
 #### 2. _Create Project Template from Vite + Vue + TypeScript_
