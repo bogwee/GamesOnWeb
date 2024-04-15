@@ -61,7 +61,12 @@ npm i
 npm i @babylonjs/core @babylonjs/loaders
 ```
 <br><br/>
-#### 7. Now you are ready, but I prefer to change the `Directory Structure` to the following:
+#### 7. _Install Cannon for Animations_
+```
+npm i cannon @types/cannon
+```
+<br><br/>
+#### 8. Now you are ready, but I prefer to change the `Directory Structure` to the following:
 ```
 Project-Name:.
 ├───assets
@@ -73,7 +78,7 @@ Project-Name:.
 └───src
 ```
 <br><br/>
-#### 8. _Run the Game_
+#### 9. _Run the Game_
 ```
 npm run dev
 ```
