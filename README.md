@@ -27,6 +27,11 @@ npm i
 npm i @babylonjs/core @babylonjs/loaders
 ```
 <br><br/>
+#### _Install Cannon for Animations_
+```
+npm i cannon @types/cannon
+```
+<br><br/>
 #### _Run the Game_
 ```
 npm run dev
