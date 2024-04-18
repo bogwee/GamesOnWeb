@@ -8,8 +8,8 @@ const MENU = document.querySelector("nav")!;
 
 function main() {
   MENU.classList.add("notplaying")
-  const scene_builder = new Game_SceneBuilder(Game.getGame().getScene());
-  scene_builder.initScene();
+  const builder = new Game_SceneBuilder(Game.getGame().getScene());
+  builder.initScene();
 }
 
 START_BTN.addEventListener("click", main);
