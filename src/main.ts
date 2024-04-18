@@ -1,38 +1,15 @@
-//import { Playground } from './createScene';
-//import { Gravity } from './firstScene';
-import './style.css';
-//import { Engine } from '@babylonjs/core';
-import { StandardMaterials } from './StandardMaterials';
+import "./style.css";
 
-//import { CustomModels } from './customModels';
+import { Game } from "./game.ts";
+import { Game_SceneBuilder } from "./scene_builder.ts";
 
-let start = document.getElementById("start")!;
-
-let menu = document.querySelector("nav")!;
-
+const START_BTN = document.getElementById("start")!;
+const MENU = document.querySelector("nav")!;
 
 function main() {
-  menu.classList.add("notplaying")
-
-  const renderCanvas = document.getElementById(
-    'renderCanvas'
-  ) as HTMLCanvasElement;
-  if (!renderCanvas) {
-    return;
-  }
-
-  //const engine = new Engine(renderCanvas, true);
-
-  new StandardMaterials(renderCanvas);
-/*
-  window.addEventListener('resize', () => {
-    engine.resize();
-  });
-
-  engine.runRenderLoop(() => {
-    scene.render();
-  });*/
+  MENU.classList.add("notplaying")
+  const builder = new Game_SceneBuilder(Game.getGame().getScene());
+  builder.initScene();
 }
 
-
-start.addEventListener("click", main);
+START_BTN.addEventListener("click", main);
