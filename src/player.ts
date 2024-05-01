@@ -1,98 +1,125 @@
-import {Scene, Vector3, MeshBuilder} from "@babylonjs/core";
+import { SceneLoader, Vector3 } from "@babylonjs/core";
+//Types :
+import type { Tuple } from "@babylonjs/core";
+import type { Scene, AbstractMesh, Skeleton, Bone } from "@babylonjs/core";
 
-import {Game} from "./game.js";
+
+//-----------------------------------------------------------------------------------
 
 
-enum HandState {
-  FIXED, // The hand can't move
-  FREE   // The hand is constantly following the mouse 
+type PlayerHandSkeleton = {
+  main: Bone,
+  fing_thumb : Tuple<Bone, 4>,
+  fing_index : Tuple<Bone, 4>,
+  fing_middle: Tuple<Bone, 4>,
+  fing_ring  : Tuple<Bone, 4>,
+  fing_pinky : Tuple<Bone, 4>,
 }
 
-class PlayerHand {
+enum HandState { FIXED, FREE }
 
-  private state : HandState;
-  private hand_position : Vector3;
+export class PlayerHand {
+  public constructor(
+    private _side: "left" | "right",
+    private _state: HandState,
+    private _hand_skeleton: PlayerHandSkeleton
+  ) {}
 
-  public isFree() : boolean {return this.state == HandState.FREE;}
-  public isFixed(): boolean {return this.state == HandState.FIXED;}
-
-  public constructor(position: Vector3, init_state: HandState) {
-    this.state = init_state;
-    this.hand_position = position;
+  public get pos(): Vector3 {
+    //TODO : Computing position of hand
+    return new Vector3(0,0,0);
   }
 
-  /*Grab a grip with the hand*/
-  public grab(): void {
-    if (this.isFixed()) return
+  public isFree(): boolean {return this._state == HandState.FREE;}
 
-    // Test if current 'hand_position' is a grip :
-    let is_a_grip = true;  //DEBUG :: Always true
-    // utiliser : pick + predicate
-    if  (!is_a_grip) return;
 
-    // ...
-    this.state = HandState.FIXED;
-  }
-
-  /*Release the hand.*/
-  public release(): void {
-    if (this.isFree()) return;
-
-    // ...
-    this.state = HandState.FREE;
-  }
-
-    /*Make the hand follow the mouse.*/
-  public update(): void {
-    if (this.isFixed()) return;
-
-    let scene: Scene = Game.getGame().getScene();
-    let mouse_coordinate: Vector3; 
-
-    scene.onPointerMove = (evt) => {
-      const pickInfo = scene.pick(scene.pointerX, scene.pointerY);
-      /*DEBUG ::*/console.log(pickInfo);
-      if (pickInfo.hit) {
-          const mouse_coordinate = pickInfo.pickedPoint!;
-          console.log(worldPointer);
-
-          text.text = `x: ${worldPointer.x.toFixed(1)}, y: ${worldPointer.y.toFixed(1)}, z: ${worldPointer.z.toFixed(1)}`;
-      } else {
-          rectangle.isVisible = false;
-      }
-    }
+  private closeLeftHand() {
     //...
   }
+  private closeRightHand() {
+    //...
+  }
+
+  private openLeftHand() {
+    //...
+  }
+  private openRightHand() {
+    //...
+  }
+
+
+  public grab() {
+    this._state = HandState.FIXED;
+
+    switch(this._side) {
+      case "left": this.closeLeftHand(); break;
+      case "left": this.closeRightHand(); break;
+    }
+  }
+  public free() {
+    this._state = HandState.FREE;
+
+    switch(this._side) {
+      case "left": this.openLeftHand(); break;
+      case "left": this.openRightHand(); break;
+    }
+  }
 }
 
 
-enum PlayerState { NONE, LEFT_HAND, RIGHT_HAND }
-
-export class Player_VTest {
- private state: PlayerState;
-
- private left_hand: PlayerHand;
- private private_hand: PlayerHand;
-
- constructor() {
-  this.sm = PlayerState.NONE;
- }
-
- public followMouse() {
-
- }
-}
+//-----------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
+type PlayerModel = {
+  mesh: AbstractMesh,
+  skeleton: Skeleton
+};
 
 export class Player {
-  //TODO
+  private _model?: PlayerModel;
+
+  private _lhand?: PlayerHand;
+  private _rhand?: PlayerHand;
+
+  public constructor(private scene: Scene){
+    this.createPlayer();
+  }
+
+  private async createPlayer() {
+    const {meshes, skeletons} = await SceneLoader.ImportMeshAsync(
+      "", "../assets/models/", "character.glb", this.scene
+    );
+    this._model = {mesh: meshes[0], skeleton: skeletons[0]}
+
+    const lhand_skeleton: PlayerHandSkeleton = {
+      main: this.model.skeleton.bones[10],
+      fing_thumb : this.model.skeleton.bones.slice(11, 15) as Tuple<Bone, 4>,
+      fing_index : this.model.skeleton.bones.slice(15, 19) as Tuple<Bone, 4>,
+      fing_middle: this.model.skeleton.bones.slice(19, 23) as Tuple<Bone, 4>,
+      fing_ring  : this.model.skeleton.bones.slice(23, 27) as Tuple<Bone, 4>,
+      fing_pinky : this.model.skeleton.bones.slice(27, 31) as Tuple<Bone, 4>,
+    }
+
+    const rhand_skeleton: PlayerHandSkeleton = {
+      main: this.model.skeleton.bones[34],
+      fing_thumb : this.model.skeleton.bones.slice(35, 39) as Tuple<Bone, 4>,
+      fing_index : this.model.skeleton.bones.slice(39, 43) as Tuple<Bone, 4>,
+      fing_middle: this.model.skeleton.bones.slice(43, 47) as Tuple<Bone, 4>,
+      fing_ring  : this.model.skeleton.bones.slice(47, 51) as Tuple<Bone, 4>,
+      fing_pinky : this.model.skeleton.bones.slice(51, 55) as Tuple<Bone, 4>,
+    }
+
+    this._lhand = new PlayerHand("left", HandState.FREE, lhand_skeleton);
+    this._rhand = new PlayerHand("right", HandState.FREE, rhand_skeleton);
+  }
+
+
+  private get model(): PlayerModel{return this._model!}
+
+  private get lhand(): PlayerHand {return this._lhand!}
+  private get rhand(): PlayerHand {return this._rhand!}
+
+  public getFreeHands(): PlayerHand[] {
+    return [this.lhand, this.rhand].filter((hand) => hand.isFree());
+  }
 }
