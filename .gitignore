@@ -1,25 +1,15 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+node_modules/
+.vscode/
 
-node_modules
-dist
-dist-ssr
-*.local
+#Dev testing directory
+**/Test/
 
-# Editor directories and files
-.vscode
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# À retirer avant le comit final :
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+package.json
+package-lock.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+src/vite-env.d.ts
