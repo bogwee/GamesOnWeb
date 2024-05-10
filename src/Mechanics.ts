@@ -8,24 +8,28 @@ import {
     ActionManager,
     ExecuteCodeAction,
     ArcRotateCamera,
-    CannonJSPlugin,
-    PhysicsImpostor,
     //FreeCamera,
+    //Animation,
   } from "@babylonjs/core";
   import "@babylonjs/loaders";
-  import * as CANNON from "cannon";
+import { LoadingScreen } from "./LoadingScreen";
   
   export class CharacterAnimations {
     scene: Scene;
     engine: Engine;
+    //camera!: FreeCamera;
+    playerCamera!: ArcRotateCamera;
   
     constructor(private canvas: HTMLCanvasElement) {
       this.engine = new Engine(this.canvas, true);
 
-      this.engine.displayLoadingUI();
+      const loading = new LoadingScreen()
 
       this.scene = this.CreateScene();
       this.CreateCharacter();
+      this.CreateEnvironment();
+      this.engine.loadingScreen = loading;
+      //this.CreateCutscene();
   
       this.engine.runRenderLoop(() => {
         
@@ -35,7 +39,15 @@ import {
   
     CreateScene(): Scene {
       const scene = new Scene(this.engine);
-
+/*
+      this.camera = new FreeCamera("camera", new Vector3(10, 2, -10), this.scene);
+      this.camera.minZ = 0.5;
+      this.camera.speed = 0.5;
+      this.camera.rotation._y = Math.PI;
+      this.camera.position._x = -60;
+      this.camera.position._y = 180;
+      this.camera.position._z = -100;
+*/
       const envTex = CubeTexture.CreateFromPrefilteredData(
         "../assets/environment/environment.env",
         scene
@@ -52,28 +64,26 @@ import {
         new Vector3(0, 1, 0),
         this.scene
       );
-
-      scene.enablePhysics(
-        new Vector3(0, -9.81, 0), 
-        new CannonJSPlugin(true, 10, CANNON));
   
       hemiLight.intensity = 0.75;
 
       return scene;
     }
 
+    async CreateEnvironment(): Promise<void> {
+      await SceneLoader.ImportMeshAsync("", "../assets/models/", "map3.glb");
+  
+    }
+
   
     async CreateCharacter(): Promise<void> {
 
-      SceneLoader.ImportMesh("", "../assets/models/", "map3.glb");
-
       //const camera = new FreeCamera("camrea", new Vector3(0, 0, 10), this.scene);
 
-      const camera = new ArcRotateCamera("arcRotateCamera", 0, 1, 10, new Vector3(0, 0, 0), this.scene);
-      camera.attachControl();
-      camera.minZ = 0.5;
-      camera.speed = 0.1;
-      camera.wheelPrecision = 10;
+      this.playerCamera = new ArcRotateCamera("arcRotateCamera", -5*Math.PI/4, 1.2, 20*Math.PI, new Vector3(0, 0, 0), this.scene);
+      this.playerCamera.attachControl();
+      this.playerCamera.speed = 0.1;
+      this.playerCamera.wheelPrecision = 10;
       
 
       const model = await SceneLoader.ImportMeshAsync(
@@ -83,16 +93,12 @@ import {
         this.scene
       );
   
-      const player = model.meshes[0];//.rotate(Vector3.Up(), Math.PI/2);
+      const player = model.meshes[0];
       player.scaling.setAll(5);
       player.position._x = -20;
       player.position._z = 1;
-      player.physicsImpostor = new PhysicsImpostor(player, PhysicsImpostor.MeshImpostor, { mass:70, restitution:0 })
-      //player.rotate(Vector3.Up(), Math.PI);
-      
 
-
-      camera.setTarget(player);
+      this.playerCamera.setTarget(player);
 
       const climb = this.scene.getAnimationGroupByName("climb")!;
 
@@ -123,7 +129,6 @@ import {
         if (key in keyStatus) {
           keyStatus[key] = true;
         }
-        console.log(keyStatus);
       }));
 
       this.scene.actionManager.registerAction( new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (event) => {
@@ -131,15 +136,7 @@ import {
         if (key in keyStatus) {
           keyStatus[key] = false;
         }
-        console.log(keyStatus);
       }))
-/*
-      this.scene.actionManager.registerAction( new ExecuteCodeAction(ActionManager.OnLeftPickTrigger, (event) => {
-        let object = event.meshUnderPointer.;
-
-        if(object == mesh)
-
-      }))*/
 
       let moving = false;
 
@@ -178,8 +175,117 @@ import {
         }
       });
 
-    
-      this.engine.hideLoadingUI();
 
     }
+/*
+    async CreateCutscene(): Promise<void> {
+      const camKeys = [];
+      const fps = 60;
+      const camAnim = new Animation(
+        "camAnim",
+        "position",
+        fps,
+        Animation.ANIMATIONTYPE_VECTOR3,
+        Animation.ANIMATIONLOOPMODE_CONSTANT,
+        true
+      );
+
+
+
+      camKeys.push({ frame: 0, value: new Vector3(-60, 180, -100) });
+      camKeys.push({ frame: 12 * fps, value: new Vector3(-60, 170, 40) });
+      camKeys.push({ frame: 17 * fps, value: new Vector3(-80, 150, 60) });
+      camKeys.push({ frame: 22 * fps, value: new Vector3(-70, 120, 70) });
+      camKeys.push({ frame: 27 * fps, value: new Vector3(-10, 85, 100) });
+      camKeys.push({ frame: 32 * fps, value: new Vector3(-40, 30, 100) });
+      camKeys.push({ frame: 36 * fps, value: new Vector3(-25, 10, 30) });
+  
+      camAnim.setKeys(camKeys);
+  
+      this.camera.animations.push(camAnim);
+  
+      await this.scene.beginAnimation(this.camera, 0, 36 * fps).waitAsync();
+      this.EndCutscene();
+    }
+  
+    EndCutscene(): void {
+      this.scene.activeCamera = this.playerCamera;
+    }*/
   }
+
+
+
+
+/*
+// Create the Babylon.js scene
+const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+const engine = new Engine(canvas, true);
+
+const createScene = async () => {
+    const scene = new Scene(engine);
+    const camera = new FreeCamera('camera', new Vector3(0, 5, -10), scene);
+    camera.setTarget(Vector3.Zero());
+    camera.attachControl(canvas, true);
+
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+    light.intensity = 0.7;
+
+    // Load the GLB model
+    const model = await SceneLoader.ImportMeshAsync('', '../assets/models/', 'mechanics.glb', scene);
+
+    // Animation names
+    const animations = model.animationGroups.map(group => group.name);
+
+    // Animation keys
+    const animationKeys = {
+        'ArrowUp': 'animation1',
+        'ArrowDown': 'animation2',
+        'ArrowLeft': 'animation3',
+        'ArrowRight': 'animation4'
+    };
+
+    // Register key events
+    const inputMap = new Map<string, boolean>();
+    document.addEventListener('keydown', event => {
+        const key = event.key;
+        if (animationKeys[key]) {
+            inputMap.set(key, true);
+        }
+    });
+
+    document.addEventListener('keyup', event => {
+        const key = event.key;
+        if (animationKeys[key]) {
+            inputMap.set(key, false);
+        }
+    });
+
+    // Run render loop
+    engine.runRenderLoop(() => {
+        scene.render();
+        inputMap.forEach((isPressed, key) => {
+            if (isPressed) {
+                const animationName = animationKeys[key];
+                const animation = model.animationGroups.find(group => group.name === animationName);
+                if (animation) {
+                    animation.play(true);
+                }
+            }
+        });
+    });
+
+    return scene;
+};
+
+// Call the createScene function
+createScene().then(scene => {
+    engine.runRenderLoop(() => {
+        scene.render();
+    });
+});
+
+// Resize the canvas when the window is resized
+window.addEventListener('resize', () => {
+    engine.resize();
+});
+*/

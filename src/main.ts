@@ -1,15 +1,28 @@
-import "./style.css";
+import './style.css';
+//import { StandardMaterials } from './StandardMaterials';
+//import { PhysicsImpostors } from './Physics';
+//import { CharacterAnimations } from './CharacterAnimations';
+//import { Map } from './Map';
+import { CharacterAnimations } from './Mechanics';
+//import { CutScene } from './CutScene';
 
-import { Game } from "./game.ts";
-import { Game_SceneBuilder } from "./scene_builder.ts";
+let start = document.getElementById("start")!;
 
-const START_BTN = document.getElementById("start")!;
-const MENU = document.querySelector("nav")!;
+let menu = document.querySelector("nav")!;
+
 
 function main() {
-  MENU.classList.add("notplaying")
-  const builder = new Game_SceneBuilder(Game.getGame().getScene());
-  builder.initScene();
+  menu.classList.add("notplaying")
+
+  const renderCanvas = document.getElementById(
+    'renderCanvas'
+  ) as HTMLCanvasElement;
+  if (!renderCanvas) {
+    return;
+  }
+
+  new CharacterAnimations(renderCanvas);
 }
 
-START_BTN.addEventListener("click", main);
+
+start.addEventListener("click", main);

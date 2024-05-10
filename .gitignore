@@ -1,15 +1,12 @@
-node_modules/
-.vscode/
-
-#Dev testing directory
-**/Test/
-
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# À retirer avant le comit final :
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-package.json
-package-lock.json
-tsconfig.json
-tsconfig.node.json
-vite.config.ts
-src/vite-env.d.ts
+node_modules
+src/customModels.ts
+src/CharacterAnimations.ts
+src/Controller.ts
+src/Obstacles.ts
+src/Physics.ts
+src/StandardMaterials.ts
+.vscode
+public/load.html
+src/CutScene.ts
+load.css
+LoadingScreen.ts
