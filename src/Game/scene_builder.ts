@@ -1,71 +1,61 @@
+//# Third-party :
+import type { Scene } from "@babylonjs/core";
 import {
-  type Scene,
-  FreeCamera,
+  //? FreeCamera,
+  ArcRotateCamera,
   Vector3,
   HemisphericLight,
   CubeTexture,
-  MeshBuilder,
-  StandardMaterial,
-  Texture
+  SceneLoader,
+  CannonJSPlugin,
 } from "@babylonjs/core";
-import '@babylonjs/loaders';
+import '@babylonjs/loaders'; //???? Est-ce réellement utile ????
+import * as CANNON from "cannon";
+
+
+//-----------------------------------------------------------------------------------
 
 
 export class Game_SceneBuilder {
-  public constructor(private scene: Scene){}
+  public constructor(
+    private scene: Scene
+  ){}
 
-  /*
-  The only mean of this class is to build the scene using '.exec()'
-
-  Note : This class doesn't define an "object" but rather an "algorithm".
-  -- It should be seen as a "namespace" containing different utility functions that act on 'Game.game.scene'.
-  -- The '.exec()' function is the only thing that should be called as it's just a way to execute the whole "namespace" in a certain way (to build the scene).  
-  
-  !\ The following implementation isn't complete and is just for testing /!
-  */
 
 
   public exec() {
-    const camera = new FreeCamera("camera", new Vector3(0, 1, -5), this.scene);
-    camera.attachControl();
-    camera.speed = 0.25;
-
-    const hemiLight = new HemisphericLight(
-      "hemiLight",
-      new Vector3(0, 1, 0),
-      this.scene
+    const player_cam = new ArcRotateCamera(
+      "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this.scene
     );
-
-    hemiLight.intensity = 0.75;
-
-    const ground = MeshBuilder.CreateGround(
-      "ground",
-      { width: 10, height: 10 },
-      this.scene
-    );
-    ground.material = this.createGroundMaterial();
+    player_cam.attachControl();
+    player_cam.minZ = 0.5;
+    player_cam.speed = 0.1;
+    player_cam.wheelPrecision = 10;
 
     const envTex = CubeTexture.CreateFromPrefilteredData(
-      "../assets/environment/environment.env",
-      this.scene
+      "../../assets/environment/environment.env",
+      this.scene,
     );
 
     this.scene.environmentTexture = envTex; // ?????
     this.scene.createDefaultSkybox(envTex, true);
-    this.scene.environmentIntensity = 0.5;
-  }
 
-  private createGroundMaterial(): StandardMaterial {
-    const groundMat = new StandardMaterial("groundMat", this.scene);
-    //const uvScale = 4;
-    const texArray: Texture[] = [];
 
-    const diffuseTex = new Texture(
-      "../assets/textures/coast.jpg",
-      this.scene
+    const hemiLight = new HemisphericLight(
+      "hemiLight",
+      new Vector3(0, 1, 0),
+      this.scene,
     );
-    groundMat.diffuseTexture = diffuseTex;
-    texArray.push(diffuseTex);
-    return groundMat;
+
+    hemiLight.intensity = 0.75;
+
+    this.scene.environmentIntensity = 0.5;
+  
+    this.scene.enablePhysics(
+      new Vector3(0, -9.81, 0), 
+      new CannonJSPlugin(true, 10, CANNON)
+    );
+
+    SceneLoader.ImportMesh("", "../../assets/models/", "map_test.glb");
   }
 }

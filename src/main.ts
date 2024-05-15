@@ -1,27 +1,32 @@
+//# Local :
 import "./UI/style.css";
-
 import { Game } from "./game.ts";
 
-// DOM's Shortcuts :
 
+//-----------------------------------------------------------------------------------
+
+
+// DOM's Shortcuts :
 const START_BTN = document.getElementById("start")!;
 const MENU = document.querySelector("nav")!;
-
 
 function startGame() {
   MENU.classList.add("notplaying");
 
+  Game.engine.displayLoadingUI();
   Game.buildScene();
+  Game.initPlayer();
+  Game.engine.hideLoadingUI();
 
-  //const player_initialiser = new Game_PlayerInitialiser(Game.game.scene);
-  //player_initialiser.exec();
+  Game.playCinematic();
+
+  Game.play();
 }
-
 
 START_BTN.addEventListener("click", startGame);
 
 
-
+//-----------------------------------------------------------------------------------
 
 
 /*
