@@ -26,19 +26,19 @@ export class Game_PlayerInitialiser {
 
     this.setPlayerMesh();
 
-    const CLIMB_ANIM        = this.player.animations["climb"];
-    const HANG_ANIM         = this.player.animations["hang"];
-    const HOP_LEFT_ANIM     = this.player.animations["hop_left"];
-    const HOP_RIGHT_ANIM    = this.player.animations["hop_right"];
-    const SHIMMY_LEFT_ANIM  = this.player.animations["shimmy_left"];
-    const SHIMMY_RIGHT_ANIM = this.player.animations["shimmy_right"];
+    const HANG_ANIM         = this.scene.getAnimationGroupByName("hang")!;
+    const CLIMB_ANIM        = this.scene.getAnimationGroupByName("climb")!;
+    const HOP_LEFT_ANIM     = this.scene.getAnimationGroupByName("hop_left")!;
+    const HOP_RIGHT_ANIM    = this.scene.getAnimationGroupByName("hop_right")!;
+    const SHIMMY_LEFT_ANIM  = this.scene.getAnimationGroupByName("shimmy_left")!;
+    const SHIMMY_RIGHT_ANIM = this.scene.getAnimationGroupByName("shimmy_right")!;
 
 
     const player_mesh = this.player.model.mesh;
 
     const keyStatus: { [key: string]: boolean } = {
-      c: false,
       h: false,
+      c: false,
       r: false,
       l: false,
       d: false,
