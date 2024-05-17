@@ -1,8 +1,8 @@
 node_modules/
 .vscode/
 
-#Dev testing directory
-src/Test/
+#Test directory
+**/Test/
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # A retirer avant le comit final :
