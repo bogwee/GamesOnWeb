@@ -1,5 +1,5 @@
 //# Third-party :
-import { Scene, Engine } from "@babylonjs/core";
+import { Scene, Engine, Animation, Vector3 } from "@babylonjs/core";
 
 //# Local :
 //import { Player } from "../player_mouse.ts";
@@ -70,8 +70,34 @@ export class Game {
 
   //************** Game Action *************//
 
-  public static playCinematic() {
-    //TODO : Implèmenter la cinématique ici
+  public static async playCinematic() {
+    const cam: any = this.scene.getCameraByName("CinematicCamera");
+    Game.scene.activeCamera = cam;
+
+    const camKeys = [];
+    const fps = 60;
+    const camAnim = new Animation(
+      "camAnim",
+      "position",
+      fps,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CONSTANT,
+      true
+    );
+
+    camKeys.push({ frame: 0, value: new Vector3(-60, 180, -100) });
+    camKeys.push({ frame: 12 * fps, value: new Vector3(-60, 170, 40) });
+    camKeys.push({ frame: 17 * fps, value: new Vector3(-80, 150, 60) });
+    camKeys.push({ frame: 22 * fps, value: new Vector3(-70, 120, 70) });
+    camKeys.push({ frame: 27 * fps, value: new Vector3(-10, 85, 100) });
+    camKeys.push({ frame: 32 * fps, value: new Vector3(-40, 30, 100) });
+    camKeys.push({ frame: 36 * fps, value: new Vector3(-25, 10, 30) });
+  
+    camAnim.setKeys(camKeys);
+  
+    cam.animations.push(camAnim);
+
+    await this.scene.beginAnimation(cam, 0, 36 * fps).waitAsync();
   }
 
   public static play() {

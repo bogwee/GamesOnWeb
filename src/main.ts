@@ -19,6 +19,7 @@ function startGame() {
   Game.engine.hideLoadingUI();
 
   Game.playCinematic();
+  Game.scene.activeCamera = Game.scene.getCameraByName("PlayerCamera");
 
   Game.play();
 }

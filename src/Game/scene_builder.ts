@@ -1,7 +1,7 @@
 //# Third-party :
 import type { Scene } from "@babylonjs/core";
 import {
-  //? FreeCamera,
+  FreeCamera,
   ArcRotateCamera,
   Vector3,
   HemisphericLight,
@@ -24,6 +24,17 @@ export class Game_SceneBuilder {
 
 
   public exec() {
+
+    const cinematic_cam = new FreeCamera(
+      "CinematicCamera", new Vector3(10, 2, -10), this.scene
+    );
+    cinematic_cam.minZ = 0.5;
+    cinematic_cam.speed = 0.5;
+    cinematic_cam.rotation._y = Math.PI;
+    cinematic_cam.position._x = -60;
+    cinematic_cam.position._y = 180;
+    cinematic_cam.position._z = -100;
+
     const player_cam = new ArcRotateCamera(
       "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this.scene
     );

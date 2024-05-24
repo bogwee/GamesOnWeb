@@ -5,7 +5,7 @@ import {
   ExecuteCodeAction,
   PhysicsImpostor,
 } from "@babylonjs/core";
-import "@babylonjs/loaders"; //???? Est-ce réellement utile ????
+import "@babylonjs/loaders";
 
 //# Local :
 import type { Player } from "../player_keyboard.ts";
@@ -122,6 +122,6 @@ export class Game_PlayerInitialiser {
       PhysicsImpostor.MeshImpostor,
       { mass:70, restitution:0 }
     );
-    //this._model.mesh.rotate(Vector3.Up(), Math.PI); //???? Est-ce réellement utile ????
+    //this._model.mesh.rotate(Vector3.Up(), Math.PI);
   }
 }
