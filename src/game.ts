@@ -24,7 +24,7 @@ export class Game {
   private _engine : Engine;
   private _scene  : Scene;
   private _player : Player;
-  private _cameras: GameCameras = {};
+  private _cameras: GameCameras;
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤ CONSTRUCTORS ¤¤¤¤¤¤¤¤¤¤¤ #//
@@ -34,6 +34,7 @@ export class Game {
     this._scene  = new Scene(this._engine);
     this._player = new Player(this._scene);
 
+    this._cameras = {};
     this.setCameras();
   }
 
@@ -72,6 +73,8 @@ export class Game {
     cinematic_cam.position._y = 180;
     cinematic_cam.position._z = -100;
 
+    this._cameras["CinematicCamera"] = cinematic_cam;
+
     //* Player Camera :
 
     const player_cam = new ArcRotateCamera(
@@ -82,9 +85,7 @@ export class Game {
     player_cam.speed = 0.1;
     player_cam.wheelPrecision = 10;
   
-    this._cameras = {
-      "CinematicCamera": cinematic_cam, "PlayerCamera": player_cam,
-    }
+    this._cameras["PlayerCamera"] = player_cam;
   }
 
   public static async buildScene() {

@@ -1,7 +1,8 @@
 //# Third-party :
 import type { Tuple } from "@babylonjs/core";
 import type { Scene, AbstractMesh, Skeleton, AnimationGroup, Bone } from "@babylonjs/core";
-import { SceneLoader, Vector3, Matrix } from "@babylonjs/core";
+import { SceneLoader } from "@babylonjs/core";
+// import { Vector3, Matrix } from "@babylonjs/core";
 
 
 //-----------------------------------------------------------------------------------
@@ -136,6 +137,7 @@ export class Player {
 
   //************* Player Actions ***********//
 
+  /*
   public checkHold(pos: Tuple<number, 2>) : boolean {
     // TODO : Testing this function
     //Src : https://www.youtube.com/watch?v=dgsWKpa7RcY
@@ -150,4 +152,5 @@ export class Player {
 
     return (hit && hit.pickedMesh && hit.pickedMesh.metadata.includes("prise")) ?? false;
   }
+  */
 }
