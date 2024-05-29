@@ -1,15 +1,13 @@
 //# Third-party :
 import type { Scene } from "@babylonjs/core";
 import {
-  FreeCamera,
-  ArcRotateCamera,
   Vector3,
   HemisphericLight,
   CubeTexture,
   SceneLoader,
   CannonJSPlugin,
 } from "@babylonjs/core";
-import '@babylonjs/loaders'; //???? Est-ce réellement utile ????
+import '@babylonjs/loaders';
 import * as CANNON from "cannon";
 
 
@@ -24,25 +22,6 @@ export class Game_SceneBuilder {
 
 
   public exec() {
-
-    const cinematic_cam = new FreeCamera(
-      "CinematicCamera", new Vector3(10, 2, -10), this.scene
-    );
-    cinematic_cam.minZ = 0.5;
-    cinematic_cam.speed = 0.5;
-    cinematic_cam.rotation._y = Math.PI;
-    cinematic_cam.position._x = -60;
-    cinematic_cam.position._y = 180;
-    cinematic_cam.position._z = -100;
-
-    const player_cam = new ArcRotateCamera(
-      "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this.scene
-    );
-    player_cam.attachControl();
-    player_cam.minZ = 0.5;
-    player_cam.speed = 0.1;
-    player_cam.wheelPrecision = 10;
-
     const envTex = CubeTexture.CreateFromPrefilteredData(
       "../../assets/environment/environment.env",
       this.scene,
@@ -50,7 +29,6 @@ export class Game_SceneBuilder {
 
     this.scene.environmentTexture = envTex; // ?????
     this.scene.createDefaultSkybox(envTex, true);
-
 
     const hemiLight = new HemisphericLight(
       "hemiLight",
@@ -61,12 +39,12 @@ export class Game_SceneBuilder {
     hemiLight.intensity = 0.75;
 
     this.scene.environmentIntensity = 0.5;
-  
+
     this.scene.enablePhysics(
       new Vector3(0, -9.81, 0), 
       new CannonJSPlugin(true, 10, CANNON)
     );
 
-    SceneLoader.ImportMesh("", "../../assets/models/", "map_test.glb");
+    SceneLoader.ImportMesh("", "../../assets/models/", "mapfinale.glb");
   }
 }

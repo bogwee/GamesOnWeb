@@ -1,6 +1,7 @@
 //# Third-party :
+import type { Tuple } from "@babylonjs/core";
 import type { Scene, AbstractMesh, Skeleton, AnimationGroup, Bone } from "@babylonjs/core";
-import { SceneLoader, Vector3 } from "@babylonjs/core";
+import { SceneLoader, Vector3, Matrix } from "@babylonjs/core";
 
 
 //-----------------------------------------------------------------------------------
@@ -16,9 +17,11 @@ export class PlayerHand {
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤¤¤¤ GETTERS ¤¤¤¤¤¤¤¤¤¤¤¤¤ #//
-  public get pos(): Vector3 {
+  public get pos(): Tuple<number, 2> {
     //TODO : Computing position of hand
-    return new Vector3(0,0,0);
+    //Note : Il faut ignorer la position par rappor au mur d'escalade.
+
+    return [0,0];
   }
 
 
@@ -58,16 +61,16 @@ type PlayerModel = {
 };
 type PlayerArms = {
   left_arm: {
-    hand: Bone,
     shoulder: Bone,
     humerus: Bone,
     forearm: Bone,
+    hand: Bone,
   },
   right_arm: {
-    hand: Bone,
     shoulder: Bone,
     humerus: Bone,
     forearm: Bone,
+    hand: Bone,
   }, 
 };
 
@@ -104,8 +107,6 @@ export class Player {
     );
     this._model = {mesh: meshes[0], skeleton: skeletons[0]};
 
-
-
     this._lhand = new PlayerHand(
       HandState.FREE,
       this.scene.getAnimationGroupByName("leftHand")!,
@@ -119,21 +120,34 @@ export class Player {
 
     this._arms = {
       left_arm: {
-        hand: player_bones[10],
-        shoulder: player_bones[9],
-        humerus: player_bones[10],
-        forearm: player_bones[11],
+        shoulder: player_bones[7],
+        humerus : player_bones[8],
+        forearm : player_bones[9],
+        hand    : player_bones[10],
       },
       right_arm: {
-        hand: player_bones[34],
-        shoulder: player_bones[36],
-        humerus: player_bones[37],
-        forearm: player_bones[38],
+        shoulder: player_bones[31],
+        humerus : player_bones[32],
+        forearm : player_bones[33],
+        hand    : player_bones[34],
       },
     };
   }
 
   //************* Player Actions ***********//
 
-  //...
+  public checkHold(pos: Tuple<number, 2>) : boolean {
+    // TODO : Testing this function
+    //Src : https://www.youtube.com/watch?v=dgsWKpa7RcY
+
+    const ray = this.scene.createPickingRay(
+      ...pos,
+      Matrix.Identity(),
+      this.scene.getCameraByName("PlayerCamera")
+    );
+
+    const hit = this.scene.pickWithRay(ray);
+
+    return (hit && hit.pickedMesh && hit.pickedMesh.metadata.includes("prise")) ?? false;
+  }
 }

@@ -1,5 +1,6 @@
 //# Third-party :
 import { Scene, Engine, Animation, Vector3 } from "@babylonjs/core";
+import { FreeCamera, ArcRotateCamera } from "@babylonjs/core";
 
 //# Local :
 //import { Player } from "../player_mouse.ts";
@@ -11,6 +12,7 @@ import { Game_PlayerInitialiser } from "./Game/player_initialiser_keyboard.ts";
 
 //-----------------------------------------------------------------------------------
 
+type GameCameras = {[keys: string]: FreeCamera|ArcRotateCamera};
 
 export class Game {
   //# ¤¤¤¤¤¤¤¤¤ CLASS ATTRIBUTES ¤¤¤¤¤¤¤¤¤ #//
@@ -18,10 +20,11 @@ export class Game {
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤¤ ATTRIBUTES ¤¤¤¤¤¤¤¤¤¤¤¤ #//
-  private _canvas: HTMLCanvasElement;
-  private _engine: Engine;
-  private _scene:  Scene;
-  private _player: Player;
+  private _canvas : HTMLCanvasElement;
+  private _engine : Engine;
+  private _scene  : Scene;
+  private _player : Player;
+  private _cameras: GameCameras = {};
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤ CONSTRUCTORS ¤¤¤¤¤¤¤¤¤¤¤ #//
@@ -30,6 +33,8 @@ export class Game {
     this._engine = new Engine(this._canvas, true);
     this._scene  = new Scene(this._engine);
     this._player = new Player(this._scene);
+
+    this.setCameras();
   }
 
 
@@ -43,38 +48,69 @@ export class Game {
   // I made the following getters static bcs typing 'Game.game.<attribute>'
   // each time you need to access an attribute of the game is annoying.
   // Instead, typing 'Game.<attribute>' seem better.
-  public static get canvas(): HTMLCanvasElement {return Game.game._canvas;}
-  public static get engine(): Engine {return Game.game._engine;}
-  public static get scene() : Scene  {return Game.game._scene;}
-  public static get player(): Player {return Game.game._player;}
+  public static get canvas() : HTMLCanvasElement {return Game.game._canvas;}
+  public static get engine() : Engine {return Game.game._engine;}
+  public static get scene()  : Scene  {return Game.game._scene;}
+  public static get player() : Player {return Game.game._player;}
+  public static get cameras(): GameCameras {return Game.game._cameras;}
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤ CLASS METHODS ¤¤¤¤¤¤¤¤¤¤ #//
 
   //********** Game Initialisation *********//
 
-  public static buildScene() {
-    const scene_builder = new Game_SceneBuilder(Game.scene);
-    scene_builder.exec();
+  private setCameras() {
+    //* Cinematic Camera :
+
+    const cinematic_cam = new FreeCamera(
+      "CinematicCamera", new Vector3(10, 2, -10), this._scene
+    );
+    cinematic_cam.minZ = 0.5;
+    cinematic_cam.speed = 0.5;
+    cinematic_cam.rotation._y = Math.PI;
+    cinematic_cam.position._x = -60;
+    cinematic_cam.position._y = 180;
+    cinematic_cam.position._z = -100;
+
+    //* Player Camera :
+
+    const player_cam = new ArcRotateCamera(
+      "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this._scene
+    );
+    player_cam.attachControl();
+    player_cam.minZ = 0.5;
+    player_cam.speed = 0.1;
+    player_cam.wheelPrecision = 10;
+  
+    this._cameras = {
+      "CinematicCamera": cinematic_cam, "PlayerCamera": player_cam,
+    }
   }
 
-  public static initPlayer() {
+  public static async buildScene() {
+    const scene_builder = new Game_SceneBuilder(Game.scene);
+    scene_builder.exec();
+
+    /*DEBUG ::*/ console.log("fin -- buildScene");
+  }
+
+  public static async initPlayer() {
     const player_initialiser = new Game_PlayerInitialiser(
-      Game.scene,
-      Game.player,
+      Game.scene, Game.player
     );
     Game.player.importPlayerModel().then(
       () => player_initialiser.exec()
     );
+
+    /*DEBUG ::*/ console.log("fin -- initPlayer");
   }
 
   //************** Game Action *************//
 
   public static async playCinematic() {
-    const cam: any = this.scene.getCameraByName("CinematicCamera");
-    Game.scene.activeCamera = cam;
+    Game.scene.activeCamera = Game.cameras["CinematicCamera"];
 
-    const camKeys = [];
+    const cam = Game.cameras["CinematicCamera"];
     const fps = 60;
     const camAnim = new Animation(
       "camAnim",
@@ -85,24 +121,23 @@ export class Game {
       true
     );
 
-    camKeys.push({ frame: 0, value: new Vector3(-60, 180, -100) });
-    camKeys.push({ frame: 12 * fps, value: new Vector3(-60, 170, 40) });
-    camKeys.push({ frame: 17 * fps, value: new Vector3(-80, 150, 60) });
-    camKeys.push({ frame: 22 * fps, value: new Vector3(-70, 120, 70) });
-    camKeys.push({ frame: 27 * fps, value: new Vector3(-10, 85, 100) });
-    camKeys.push({ frame: 32 * fps, value: new Vector3(-40, 30, 100) });
-    camKeys.push({ frame: 36 * fps, value: new Vector3(-25, 10, 30) });
-  
-    camAnim.setKeys(camKeys);
-  
-    cam.animations.push(camAnim);
+    camAnim.setKeys([
+      { frame: 0, value: new Vector3(-60, 180, -100) },
+      { frame: 12 * fps, value: new Vector3(-60, 170, 40) },
+      { frame: 17 * fps, value: new Vector3(-80, 150, 60) },
+      { frame: 22 * fps, value: new Vector3(-70, 120, 70) },
+      { frame: 27 * fps, value: new Vector3(-10, 85, 100) },
+      { frame: 32 * fps, value: new Vector3(-40, 30, 100) },
+      { frame: 36 * fps, value: new Vector3(-25, 10, 30) },
+    ]);
 
+    cam.animations.push(camAnim);
     await this.scene.beginAnimation(cam, 0, 36 * fps).waitAsync();
+
+    Game.scene.activeCamera = Game.cameras["PlayerCamera"];
   }
 
   public static play() {
-    Game.engine.runRenderLoop(() => {
-      Game.scene.render();
-    });
+    Game.engine.runRenderLoop(() => Game.scene.render());
   }
 }
