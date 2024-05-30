@@ -6,6 +6,7 @@ import type { AbstractMesh } from "@babylonjs/core";
 import { SceneLoader } from "@babylonjs/core";
 import '@babylonjs/loaders';
 
+import { ActionManager, ExecuteCodeAction, Matrix } from "@babylonjs/core";
 
 //# Local :
 import { Player } from "./player_keyboard.ts";
@@ -15,8 +16,11 @@ import { Game_PlayerInitialiser } from "./Game/player_initialiser_keyboard.ts";
 
 //-----------------------------------------------------------------------------------
 
-type GameCameras      = {[keys: string]: FreeCamera|ArcRotateCamera};
-type MapMeshes        = {[keys: string]: AbstractMesh[]};
+
+type GameCameras = {[keys: string]: FreeCamera|ArcRotateCamera};
+type MapMeshes = {[keys: string]: AbstractMesh[]};
+type Kind = "Decors"|"Obtsacles"|"SlipperyObjects"|"GrippableObjects"|"End";
+
 
 
 export class Game {
@@ -109,7 +113,7 @@ export class Game {
     SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "obstacles.glb"
     ).then((data) => {
-      this._mapMeshes["Obtsacles"] = data.meshes;
+      this._mapMeshes["Obstacles"] = data.meshes;
     });
 
     SceneLoader.ImportMeshAsync(
@@ -138,11 +142,13 @@ export class Game {
 
   public static async initPlayer() {
     const player_initialiser = new Game_PlayerInitialiser(
-      Game.scene, Game.player, Game.mapMeshes
+      Game.scene, Game.player
     );
-    Game.player.importPlayerModel().then(
-      () => player_initialiser.exec()
-    );
+    Game.player.importPlayerModel().then(() => {
+        player_initialiser.exec();
+        Game.player.setAnim();
+        Game.initPlayerActions();
+    });
   }
 
   //************** Game Action *************//
@@ -179,5 +185,103 @@ export class Game {
 
   public static play() {
     Game.engine.runRenderLoop(() => Game.scene.render());
+  }
+
+  // --- Playing :
+
+  /*
+  private static atPos(pos: Vector3): Kind {
+    const ray = this.scene.createPickingRay(
+      pos.x, pos.y,
+      Matrix.Identity(),
+      Game.scene.getCameraByName("PlayerCamera")
+    );
+
+    const hit = Game.scene.pickWithRay(ray);
+    if (!hit || !hit.pickedMesh) return "Decors";
+    const pickedMesh = hit.pickedMesh;
+
+    const KINDS: Kind[] = [
+      "Decors", "Obtsacles", "SlipperyObjects", "GrippableObjects", "End"
+    ];
+
+    console.log(pickedMesh);
+
+    for (let kind of KINDS) {
+      if (Game.mapMeshes[kind].includes(pickedMesh))
+        return kind;
+    }
+
+    return "Decors";
+  }
+  */
+  private static atPos(pos: Vector3): Kind {
+    //TODO : Patching 'atPos'
+    return "GrippableObjects";
+  }
+
+  private static switchMoves(key: string) {
+    switch (key) {
+      case "c": Game.player.anim.climb(); break;
+      case "g": Game.player.anim.hopLeft(); break;
+      case "d": Game.player.anim.hopRight(); break;
+      case "l": Game.player.anim.shimmyLeft(); break;
+      case "r": Game.player.anim.shimmyRight(); break;
+    }
+  }
+
+  private static initPlayerActions() {
+    //* Inputs :
+    let key_pressed: "h"|"c"|"r"|"l"|"d"|"g"|null = null;
+
+    Game.scene.actionManager = new ActionManager(Game.scene);
+    Game.scene.actionManager.registerAction(new ExecuteCodeAction(
+      ActionManager.OnKeyDownTrigger, 
+      (event) => key_pressed = event.sourceEvent.key,
+    ));
+    Game.scene.actionManager.registerAction(new ExecuteCodeAction(
+      ActionManager.OnKeyUpTrigger,
+      (_event) => key_pressed = null,
+    ))
+
+
+    //* Logic :
+    let isMoving: boolean = false;
+    let isFalling: boolean;
+    let isSliding: boolean;
+
+    const player_mesh: AbstractMesh = Game.player.model.mesh;
+
+    let isHoldable = (s:string) => {
+      return ["SlipperyObjects","GrippableObjects"].includes(s);
+    };
+
+    Game.scene.onBeforeRenderObservable.add(() => {
+      isFalling = Game.atPos(player_mesh.position) == "Decors";
+      isSliding = Game.atPos(player_mesh.position) == "SlipperyObjects";
+
+      // Gravity :
+      if (isFalling || isSliding) {
+        Game.player.anim.hang();
+
+        if (isFalling) {
+          player_mesh.position.y -= 1;
+          isFalling = !(
+            key_pressed == "h" && isHoldable(Game.atPos(player_mesh.position))
+          );
+          return;
+        }
+
+        player_mesh.position.y -= 0.5;
+      }
+
+      if(key_pressed) {
+        isMoving = true;
+        Game.switchMoves(key_pressed);
+      } else if(isMoving) {
+        isMoving = false;
+        Game.player.anim.hang();
+      }
+    });
   }
 }

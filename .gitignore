@@ -4,16 +4,4 @@ node_modules/
 #Test directory
 **/Test/
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# A retirer avant le comit final :
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-package.json
-package-lock.json
-tsconfig.json
-tsconfig.node.json
-vite.config.ts
-src/vite-env.d.ts
-
-#Sinon je (Patrick) ne pourrai pas comit
 assets/
