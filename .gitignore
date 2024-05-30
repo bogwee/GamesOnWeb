@@ -4,4 +4,4 @@ node_modules/
 #Test directory
 **/Test/
 
-assets/
+assets/models/Map
