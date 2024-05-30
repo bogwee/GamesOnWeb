@@ -1,11 +1,7 @@
 //# Third-party :
 import type { Scene } from "@babylonjs/core";
 import {
-  Vector3,
-  HemisphericLight,
-  CubeTexture,
-  SceneLoader,
-  CannonJSPlugin,
+  Vector3, HemisphericLight, CubeTexture, CannonJSPlugin
 } from "@babylonjs/core";
 import '@babylonjs/loaders';
 import * as CANNON from "cannon";
@@ -44,7 +40,5 @@ export class Game_SceneBuilder {
       new Vector3(0, -9.81, 0), 
       new CannonJSPlugin(true, 10, CANNON)
     );
-
-    SceneLoader.ImportMesh("", "../../assets/models/", "mapfinale.glb");
   }
 }

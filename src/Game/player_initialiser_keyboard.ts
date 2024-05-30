@@ -1,5 +1,5 @@
 //# Third-party :
-import type { Scene } from "@babylonjs/core";
+import type { Scene, AbstractMesh } from "@babylonjs/core";
 import {
   ActionManager,
   ExecuteCodeAction,
@@ -13,17 +13,18 @@ import type { Player } from "../player_keyboard.ts";
 
 //-----------------------------------------------------------------------------------
 
+type MapMeshes = {[keys: string]: AbstractMesh[]};
 
 export class Game_PlayerInitialiser {
   public constructor(
     private scene: Scene,
     private player: Player,
+    private mapMeshes: MapMeshes,
   ){}
 
 
   public exec() {
     this.setPlayerCamera();
-
     this.setPlayerMesh();
 
     const HANG_ANIM         = this.scene.getAnimationGroupByName("hang")!;
@@ -34,64 +35,63 @@ export class Game_PlayerInitialiser {
     const SHIMMY_RIGHT_ANIM = this.scene.getAnimationGroupByName("shimmy_right")!;
 
 
-    const player_mesh = this.player.model.mesh;
-
-    const keyStatus: { [key: string]: boolean } = {
-      h: false,
-      c: false,
-      r: false,
-      l: false,
-      d: false,
-      g: false
-    };
-
+    const KEYS = ["h","c","r","l","d","g"];
+    let key_pressed:"h"|"c"|"r"|"l"|"d"|"g"|null = null;
+ 
     this.scene.actionManager = new ActionManager(this.scene);
 
     this.scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (event) => {
       let key = event.sourceEvent.key;
-      if (key in keyStatus)
-        keyStatus[key] = true;
+      if (KEYS.includes(key))
+        key_pressed = key;
     }));
 
     this.scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (event) => {
       let key = event.sourceEvent.key;
-      if (key in keyStatus)
-        keyStatus[key] = false;
+      if (KEYS.includes(key))
+        key_pressed = null;
     }))
 
-
+    const player_mesh: AbstractMesh = this.player.model.mesh;
     let moving = false;
 
     this.scene.onBeforeRenderObservable.add(() => {
-      // If any key is pressed :
-      if(
-        keyStatus.h || keyStatus.c || keyStatus.r || keyStatus.l || keyStatus.d || keyStatus.g
-      ) {
+      //let player_pos = player_mesh.position
+
+      if(key_pressed) {
         moving = true;
 
-        if(keyStatus.c) {
-          CLIMB_ANIM.start(true, 1, CLIMB_ANIM.from, CLIMB_ANIM.to, false);
-          player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(0.2));
-        }
+        switch (key_pressed) {
+          case "c": {
+            //if (isAHold(pos))
+            CLIMB_ANIM.start(true, 1, CLIMB_ANIM.from, CLIMB_ANIM.to, false);
+            player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(0.2));
+            break;
+          }
 
-        if(keyStatus.r) {
-          SHIMMY_RIGHT_ANIM.start(false, 1, SHIMMY_RIGHT_ANIM.from, SHIMMY_RIGHT_ANIM.to, true);
-          player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.1));
-        }
+          case "r": {
+            SHIMMY_RIGHT_ANIM.start(false, 1, SHIMMY_RIGHT_ANIM.from, SHIMMY_RIGHT_ANIM.to, true);
+            player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.1));
+            break;
+          } 
 
-        if(keyStatus.l) {
-          SHIMMY_LEFT_ANIM.start(true, 1, SHIMMY_LEFT_ANIM.from, SHIMMY_LEFT_ANIM.to, true);
-          player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.1));
-        }
+          case "l": {
+            SHIMMY_LEFT_ANIM.start(true, 1, SHIMMY_LEFT_ANIM.from, SHIMMY_LEFT_ANIM.to, true);
+            player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.1));
+            break;
+          }
 
-        if(keyStatus.d) {
-          HOP_RIGHT_ANIM.start(true, 1, HOP_RIGHT_ANIM.from, HOP_RIGHT_ANIM.to, false);
-          player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.4));
-        }
-        
-        if(keyStatus.g) {
-          HOP_LEFT_ANIM.start(true, 1, HOP_LEFT_ANIM.from, HOP_LEFT_ANIM.to, false);
-          player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.4));
+          case "d": {
+            HOP_RIGHT_ANIM.start(true, 1, HOP_RIGHT_ANIM.from, HOP_RIGHT_ANIM.to, false);
+            player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.4));
+            break;
+          }
+
+          case "g": {
+            HOP_LEFT_ANIM.start(true, 1, HOP_LEFT_ANIM.from, HOP_LEFT_ANIM.to, false);
+            player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.4));
+            break;
+          }
         }
 
       } else if(moving) {
@@ -122,6 +122,5 @@ export class Game_PlayerInitialiser {
       PhysicsImpostor.MeshImpostor,
       { mass:70, restitution:0 }
     );
-    //this._model.mesh.rotate(Vector3.Up(), Math.PI);
   }
 }

@@ -1,18 +1,23 @@
 //# Third-party :
-import { Scene, Engine, Animation, Vector3 } from "@babylonjs/core";
-import { FreeCamera, ArcRotateCamera } from "@babylonjs/core";
+import { Scene, Engine, Animation } from "@babylonjs/core";
+import { ArcRotateCamera, FreeCamera, Vector3 } from "@babylonjs/core";
+
+import type { AbstractMesh } from "@babylonjs/core";
+import { SceneLoader } from "@babylonjs/core";
+import '@babylonjs/loaders';
+
 
 //# Local :
-//import { Player } from "../player_mouse.ts";
 import { Player } from "./player_keyboard.ts";
 import { Game_SceneBuilder } from "./Game/scene_builder.ts";
-//import { Game_PlayerInitialiser } from "./Game/player_initialiser_mouse.ts";
 import { Game_PlayerInitialiser } from "./Game/player_initialiser_keyboard.ts";
 
 
 //-----------------------------------------------------------------------------------
 
-type GameCameras = {[keys: string]: FreeCamera|ArcRotateCamera};
+type GameCameras      = {[keys: string]: FreeCamera|ArcRotateCamera};
+type MapMeshes        = {[keys: string]: AbstractMesh[]};
+
 
 export class Game {
   //# ¤¤¤¤¤¤¤¤¤ CLASS ATTRIBUTES ¤¤¤¤¤¤¤¤¤ #//
@@ -24,7 +29,10 @@ export class Game {
   private _engine : Engine;
   private _scene  : Scene;
   private _player : Player;
-  private _cameras: GameCameras;
+
+  private _cameras   : GameCameras;
+  private _mapMeshes : MapMeshes;
+
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤ CONSTRUCTORS ¤¤¤¤¤¤¤¤¤¤¤ #//
@@ -36,6 +44,9 @@ export class Game {
 
     this._cameras = {};
     this.setCameras();
+
+    this._mapMeshes = {}
+    this.setMap()
   }
 
 
@@ -49,12 +60,12 @@ export class Game {
   // I made the following getters static bcs typing 'Game.game.<attribute>'
   // each time you need to access an attribute of the game is annoying.
   // Instead, typing 'Game.<attribute>' seem better.
-  public static get canvas() : HTMLCanvasElement {return Game.game._canvas;}
-  public static get engine() : Engine {return Game.game._engine;}
-  public static get scene()  : Scene  {return Game.game._scene;}
-  public static get player() : Player {return Game.game._player;}
-  public static get cameras(): GameCameras {return Game.game._cameras;}
-
+  public static get canvas()   : HTMLCanvasElement {return Game.game._canvas;}
+  public static get engine()   : Engine {return Game.game._engine;}
+  public static get scene()    : Scene  {return Game.game._scene;}
+  public static get player()   : Player {return Game.game._player;}
+  public static get cameras()  : GameCameras {return Game.game._cameras;}
+  public static get mapMeshes(): MapMeshes   {return Game.game._mapMeshes;}
 
   //# ¤¤¤¤¤¤¤¤¤¤¤ CLASS METHODS ¤¤¤¤¤¤¤¤¤¤ #//
 
@@ -88,22 +99,50 @@ export class Game {
     this._cameras["PlayerCamera"] = player_cam;
   }
 
+  private setMap() {
+    SceneLoader.ImportMeshAsync(
+      "", "../../assets/models/Map/", "decors.glb"
+    ).then((data) => {
+      this._mapMeshes["Decors"] = data.meshes;
+    });
+
+    SceneLoader.ImportMeshAsync(
+      "", "../../assets/models/Map/", "obstacles.glb"
+    ).then((data) => {
+      this._mapMeshes["Obtsacles"] = data.meshes;
+    });
+
+    SceneLoader.ImportMeshAsync(
+      "", "../../assets/models/Map/", "slippery-objects.glb"
+    ).then((data) => {
+      this._mapMeshes["SlipperyObjects"] = data.meshes;
+    });
+
+    SceneLoader.ImportMeshAsync(
+      "", "../../assets/models/Map/", "grippable-objects.glb"
+    ).then((data) => {
+      this._mapMeshes["GrippableObjects"] = data.meshes;
+    });
+
+    SceneLoader.ImportMeshAsync(
+      "", "../../assets/models/Map/", "end.glb"
+    ).then((data) => {
+      this._mapMeshes["End"] = data.meshes;
+    });
+  }
+
   public static async buildScene() {
     const scene_builder = new Game_SceneBuilder(Game.scene);
     scene_builder.exec();
-
-    /*DEBUG ::*/ console.log("fin -- buildScene");
   }
 
   public static async initPlayer() {
     const player_initialiser = new Game_PlayerInitialiser(
-      Game.scene, Game.player
+      Game.scene, Game.player, Game.mapMeshes
     );
     Game.player.importPlayerModel().then(
       () => player_initialiser.exec()
     );
-
-    /*DEBUG ::*/ console.log("fin -- initPlayer");
   }
 
   //************** Game Action *************//
