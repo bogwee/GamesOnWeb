@@ -18,13 +18,7 @@ async function startGame() {
   await Game.initPlayer();
   //Game.engine.hideLoadingUI();
 
-  /*DEBUG ::*/ console.log("Game initialised");
-  /*DEBUG ::*/ console.log("---------------------\n---------------------");
-  /*DEBUG ::*/ console.log("START Cinematic");
-
-  await Game.playCinematic();
-
-  /*DEBUG ::*/ console.log("END Cinematic");
+  Game.playCinematic();
 
   Game.play();
 }
