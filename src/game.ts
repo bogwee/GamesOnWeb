@@ -19,7 +19,7 @@ import { Game_PlayerInitialiser } from "./Game/player_initialiser_keyboard.ts";
 
 type GameCameras = {[keys: string]: FreeCamera|ArcRotateCamera};
 type MapMeshes = {[keys: string]: AbstractMesh[]};
-type Kind = "Decors"|"Obtsacles"|"SlipperyObjects"|"GrippableObjects"|"End";
+type Kind = "Decors"|"Obstacles"|"SlipperyObjects"|"GrippableObjects"|"End";
 
 
 
@@ -50,7 +50,7 @@ export class Game {
     this.setCameras();
 
     this._mapMeshes = {}
-    this.setMap()
+    //this.setMap()
   }
 
 
@@ -103,41 +103,32 @@ export class Game {
     this._cameras["PlayerCamera"] = player_cam;
   }
 
-  private setMap() {
-    SceneLoader.ImportMeshAsync(
+  private async setMap() {
+    this._mapMeshes["Decors"] = (await SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "decors.glb"
-    ).then((data) => {
-      this._mapMeshes["Decors"] = data.meshes;
-    });
+    )).meshes;
 
-    SceneLoader.ImportMeshAsync(
+    this._mapMeshes["Obstacles"] = (await SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "obstacles.glb"
-    ).then((data) => {
-      this._mapMeshes["Obstacles"] = data.meshes;
-    });
+    )).meshes;
 
-    SceneLoader.ImportMeshAsync(
+    this._mapMeshes["SlipperyObjects"] = (await SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "slippery-objects.glb"
-    ).then((data) => {
-      this._mapMeshes["SlipperyObjects"] = data.meshes;
-    });
+    )).meshes;
 
-    SceneLoader.ImportMeshAsync(
+    this._mapMeshes["GrippableObjects"] = (await SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "grippable-objects.glb"
-    ).then((data) => {
-      this._mapMeshes["GrippableObjects"] = data.meshes;
-    });
+    )).meshes;
 
-    SceneLoader.ImportMeshAsync(
+    this._mapMeshes["End"] = (await SceneLoader.ImportMeshAsync(
       "", "../../assets/models/Map/", "end.glb"
-    ).then((data) => {
-      this._mapMeshes["End"] = data.meshes;
-    });
+    )).meshes;
   }
 
   public static async buildScene() {
     const scene_builder = new Game_SceneBuilder(Game.scene);
     scene_builder.exec();
+    await Game.game.setMap();
   }
 
   public static async initPlayer() {
@@ -189,7 +180,6 @@ export class Game {
 
   // --- Playing :
 
-  /*
   private static atPos(pos: Vector3): Kind {
     const ray = this.scene.createPickingRay(
       pos.x, pos.y,
@@ -202,7 +192,7 @@ export class Game {
     const pickedMesh = hit.pickedMesh;
 
     const KINDS: Kind[] = [
-      "Decors", "Obtsacles", "SlipperyObjects", "GrippableObjects", "End"
+      "Decors", "Obstacles", "SlipperyObjects", "GrippableObjects", "End"
     ];
 
     console.log(pickedMesh);
@@ -213,11 +203,6 @@ export class Game {
     }
 
     return "Decors";
-  }
-  */
-  private static atPos(pos: Vector3): Kind {
-    //TODO : Patching 'atPos'
-    return "GrippableObjects";
   }
 
   private static switchMoves(key: string) {
@@ -232,12 +217,13 @@ export class Game {
 
   private static initPlayerActions() {
     //* Inputs :
+    let needUpdates = false;
     let key_pressed: "h"|"c"|"r"|"l"|"d"|"g"|null = null;
 
     Game.scene.actionManager = new ActionManager(Game.scene);
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyDownTrigger, 
-      (event) => key_pressed = event.sourceEvent.key,
+      (event) => [key_pressed, needUpdates] = [event.sourceEvent.key, true]
     ));
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyUpTrigger,
@@ -257,6 +243,9 @@ export class Game {
     };
 
     Game.scene.onBeforeRenderObservable.add(() => {
+      if (!needUpdates && !isFalling && !isSliding)
+        return;
+
       isFalling = Game.atPos(player_mesh.position) == "Decors";
       isSliding = Game.atPos(player_mesh.position) == "SlipperyObjects";
 
@@ -282,6 +271,8 @@ export class Game {
         isMoving = false;
         Game.player.anim.hang();
       }
+
+      needUpdates = false;
     });
   }
 }
