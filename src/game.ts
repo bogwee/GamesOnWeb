@@ -161,23 +161,23 @@ export class Game {
 
     camAnim.setKeys([
       { frame: 0, value: new Vector3(-100, 220, -80) },
-      { frame: 5 * fps, value: new Vector3(-55, 170, 45) },
-      { frame: 5 * fps, value: new Vector3(-75, 170, 30) },
-      { frame: 7 * fps, value: new Vector3(-75, 130, 40) },
-      { frame: 10 * fps, value: new Vector3(-15, 115, 50) },
-      { frame: 10 * fps, value: new Vector3(5, 110, 30) },
-      { frame: 12 * fps, value: new Vector3(13, 75, 0) },
-      { frame: 13 * fps, value: new Vector3(13, 75, 0) },
-      { frame: 15 * fps, value: new Vector3(-7, 100, 30) },
-      { frame: 17 * fps, value: new Vector3(-40, 70, 60) },
-      { frame: 20 * fps, value: new Vector3(-32, 150, 120) },
-      { frame: 21 * fps, value: new Vector3(-32, 150, 120) },
-      { frame: 25 * fps, value: new Vector3(-32, 35, 120) },
-      { frame: 26 * fps, value: new Vector3(-32, 35, 120) },
+      { frame: 3 * fps, value: new Vector3(-55, 170, 45) },
+      { frame: 3 * fps, value: new Vector3(-75, 170, 30) },
+      { frame: 5 * fps, value: new Vector3(-75, 130, 40) },
+      { frame: 6 * fps, value: new Vector3(-15, 115, 50) },
+      { frame: 6 * fps, value: new Vector3(5, 110, 30) },
+      { frame: 7 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 8 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 8 * fps, value: new Vector3(-7, 100, 30) },
+      { frame: 10 * fps, value: new Vector3(-40, 70, 60) },
+      { frame: 10 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 11 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 15 * fps, value: new Vector3(-32, 35, 120) },
+      { frame: 16 * fps, value: new Vector3(-32, 35, 120) }
     ]);
 
     cam.animations.push(camAnim);
-    await this.scene.beginAnimation(cam, 0, 18 * fps).waitAsync();
+    await this.scene.beginAnimation(cam, 0, 16 * fps).waitAsync();
 
     Game.scene.activeCamera = Game.cameras["PlayerCamera"];
   }
