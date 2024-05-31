@@ -91,9 +91,14 @@ export class Game {
     this._cameras["CinematicCamera"] = cinematic_cam;
 
     //* Player Camera :
+    
+    //constants to fix camera position
+    const arcAlpha = 1.5046653238154635 + (1.6172777427591525 - 1.159866067925365);
+    const arcBeta = 1.5296884191499718 + (1.2714331445491482 - 1.2535226809366065);
+    const arcRadius = 44.649908575154164 + (47.23366662045099 - 44.649908575154164);
 
     const player_cam = new ArcRotateCamera(
-      "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this._scene
+      "PlayerCamera", arcAlpha, arcBeta, arcRadius, new Vector3(0, 1, 0), this._scene
     );
     player_cam.attachControl();
     player_cam.minZ = 0.5;
@@ -159,17 +164,23 @@ export class Game {
     );
 
     camAnim.setKeys([
-      { frame: 0, value: new Vector3(-60, 180, -100) },
-      { frame: 12 * fps, value: new Vector3(-60, 170, 40) },
-      { frame: 17 * fps, value: new Vector3(-80, 150, 60) },
-      { frame: 22 * fps, value: new Vector3(-70, 120, 70) },
-      { frame: 27 * fps, value: new Vector3(-10, 85, 100) },
-      { frame: 32 * fps, value: new Vector3(-40, 30, 100) },
-      { frame: 36 * fps, value: new Vector3(-25, 10, 30) },
-    ]);
+      {frame: 0, value: new Vector3(-100, 220, -80) },
+      { frame: 5 * fps, value: new Vector3(-55, 170, 45) },
+      { frame: 5 * fps, value: new Vector3(-75, 170, 30) },
+      { frame: 7 * fps, value: new Vector3(-75, 130, 40) },
+      { frame: 10 * fps, value: new Vector3(-15, 115, 50) },
+      { frame: 10 * fps, value: new Vector3(5, 110, 30) },
+      { frame: 12 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 13 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 15 * fps, value: new Vector3(-7, 100, 30) },
+      { frame: 17 * fps, value: new Vector3(-40, 70, 60) },
+      { frame: 20 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 21 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 25 * fps, value: new Vector3(-32, 35, 120) },
+      { frame: 26 * fps, value: new Vector3(-32, 35, 120)}]);
 
     cam.animations.push(camAnim);
-    await this.scene.beginAnimation(cam, 0, 36 * fps).waitAsync();
+    await this.scene.beginAnimation(cam, 0, 26 * fps).waitAsync();
 
     Game.scene.activeCamera = Game.cameras["PlayerCamera"];
   }
@@ -223,7 +234,7 @@ export class Game {
     Game.scene.actionManager = new ActionManager(Game.scene);
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyDownTrigger, 
-      (event) => [key_pressed, needUpdates] = [event.sourceEvent.key, true]
+      (event) => key_pressed = event.sourceEvent.key
     ));
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyUpTrigger,

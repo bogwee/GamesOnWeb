@@ -14,6 +14,7 @@ type PlayerModel = {
 type PlayerAnim = {
   hang: ()=>void,
   climb: ()=>void,
+  climbDown: ()=>void,
   hopLeft: ()=>void,
   hopRight: ()=>void,
   shimmyLeft: ()=>void,
@@ -42,12 +43,13 @@ export class Player {
   }
 
   public setAnim() {
-    const HANG_ANIM         = this.scene.getAnimationGroupByName("hang")!;
-    const CLIMB_ANIM        = this.scene.getAnimationGroupByName("climb")!;
-    const HOP_LEFT_ANIM     = this.scene.getAnimationGroupByName("hop_left")!;
-    const HOP_RIGHT_ANIM    = this.scene.getAnimationGroupByName("hop_right")!;
-    const SHIMMY_LEFT_ANIM  = this.scene.getAnimationGroupByName("shimmy_left")!;
-    const SHIMMY_RIGHT_ANIM = this.scene.getAnimationGroupByName("shimmy_right")!;
+    const HANG_ANIM         = this.scene.getAnimationGroupByName("1_hang")!;
+    const CLIMB_ANIM        = this.scene.getAnimationGroupByName("4_climbingUp")!;
+    const CLIMB_DOWN_ANIM   = this.scene.getAnimationGroupByName("5_climbingDown")!;
+    const HOP_LEFT_ANIM     = this.scene.getAnimationGroupByName("9_hopLeft")!;
+    const HOP_RIGHT_ANIM    = this.scene.getAnimationGroupByName("8_hopRight")!;
+    const SHIMMY_LEFT_ANIM  = this.scene.getAnimationGroupByName("7_shimmyLeft")!;
+    const SHIMMY_RIGHT_ANIM = this.scene.getAnimationGroupByName("6_shimmyRight")!;
 
     const player_mesh = this.model.mesh;
 
@@ -59,18 +61,23 @@ export class Player {
         SHIMMY_RIGHT_ANIM.stop();
         HOP_LEFT_ANIM.stop();
         HOP_RIGHT_ANIM.stop();
+        CLIMB_DOWN_ANIM.stop();
       },
       climb: ()=>{
         CLIMB_ANIM.start(true, 1, CLIMB_ANIM.from, CLIMB_ANIM.to, false);
         player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(0.2));
       },
+      climbDown: ()=>{
+        CLIMB_DOWN_ANIM.start(true, 1, CLIMB_DOWN_ANIM.from, CLIMB_DOWN_ANIM.to, false);
+        player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(0.2));
+      },
       hopLeft: ()=>{
         HOP_LEFT_ANIM.start(true, 1, HOP_LEFT_ANIM.from, HOP_LEFT_ANIM.to, false);
-        player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.4));
+        player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.2));
       },
       hopRight: ()=>{
         HOP_RIGHT_ANIM.start(true, 1, HOP_RIGHT_ANIM.from, HOP_RIGHT_ANIM.to, false);
-        player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.4));
+        player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.2));
       },
       shimmyLeft: ()=>{
         SHIMMY_LEFT_ANIM.start(true, 1, SHIMMY_LEFT_ANIM.from, SHIMMY_LEFT_ANIM.to, true);
