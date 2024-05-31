@@ -1,7 +1,7 @@
 //# Third-party :
 import type { Scene } from "@babylonjs/core";
 import {
-  Vector3, HemisphericLight, CubeTexture, CannonJSPlugin
+  Vector3, HemisphericLight, CubeTexture, CannonJSPlugin, Sound
 } from "@babylonjs/core";
 import '@babylonjs/loaders';
 import * as CANNON from "cannon";
@@ -25,6 +25,19 @@ export class Game_SceneBuilder {
 
     this.scene.environmentTexture = envTex; // ?????
     this.scene.createDefaultSkybox(envTex, true);
+
+    const backgroundMusic = new Sound(
+      "backgroundMusic",
+      "./assets/audio/olympics.mp3",
+      this.scene,
+      null,
+      {
+        volume: 0,
+        autoplay: true,
+      }
+    );
+
+    backgroundMusic.setVolume(0.75, 30);
 
     const hemiLight = new HemisphericLight(
       "hemiLight",
