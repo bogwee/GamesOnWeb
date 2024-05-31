@@ -188,18 +188,12 @@ export class Game {
 
   // --- Playing :
 
-  private static atPos(pos: Vector3): Kind {
+  private static atPlayer(): Kind {
     const ray = Game.cameras["PlayerCamera"].getForwardRay(100);
-    
-    //this.scene.createPickingRay(
-    //  pos.x, pos.y,
-    //  Matrix.Identity(),
-    //  Game.scene.getCameraByName("PlayerCamera")
-    //);
 
-    //let predicate = (mesh: AbstractMesh) => mesh != Game.player.model.mesh;
+    let predicate = (mesh: AbstractMesh) => mesh != Game.player.model.mesh;
 
-    const hit = Game.scene.pickWithRay(ray);//, predicate);
+    const hit = Game.scene.pickWithRay(ray, predicate);
     if (!hit || !hit.pickedMesh) return "Decors";
     const pickedMesh = hit.pickedMesh;
 
@@ -274,7 +268,7 @@ export class Game {
         Game.player.anim.hang();
 
         if (key_pressed == "ArrowUp")
-          isFalling = !isHoldable(Game.atPos(player_mesh.position));
+          isFalling = !isHoldable(Game.atPlayer());
 
         player_mesh.position.y -= 1;
         return;
@@ -288,7 +282,7 @@ export class Game {
           isMoving = true;
         }
         
-        const kind = Game.atPos(player_mesh.position);
+        const kind = Game.atPlayer();
         if(isHoldable(kind)) {
           isSliding = false;
           return;
@@ -307,7 +301,7 @@ export class Game {
       if(key_pressed) {
         isMoving = true
         Game.switchMoves(key_pressed, shiftPressed);
-        const kind = Game.atPos(player_mesh.position);
+        const kind = Game.atPlayer();
         isFalling = kind == "Decors";
         isSliding = kind == "SlipperyObjects";
       } else if (isMoving) {
