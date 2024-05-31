@@ -9,9 +9,9 @@ import '@babylonjs/loaders';
 import { ActionManager, ExecuteCodeAction, Matrix } from "@babylonjs/core";
 
 //# Local :
-import { Player } from "./player_keyboard.ts";
+import { Player } from "./player.ts";
 import { Game_SceneBuilder } from "./Game/scene_builder.ts";
-import { Game_PlayerInitialiser } from "./Game/player_initialiser_keyboard.ts";
+import { Game_PlayerInitialiser } from "./Game/player_initialiser.ts";
 
 
 //-----------------------------------------------------------------------------------
@@ -49,15 +49,14 @@ export class Game {
     this._cameras = {};
     this.setCameras();
 
-    this._mapMeshes = {}
-    //this.setMap()
+    this._mapMeshes = {};
   }
 
 
   //# ¤¤¤¤¤¤¤¤¤¤¤¤¤¤ GETTERS ¤¤¤¤¤¤¤¤¤¤¤¤¤ #//
   public static get game(): Game {
     if (!Game._instance)
-      Game._instance = new Game()
+      Game._instance = new Game();
     return Game._instance;
   }
 
@@ -91,11 +90,16 @@ export class Game {
     this._cameras["CinematicCamera"] = cinematic_cam;
 
     //* Player Camera :
+    
+    //constants to fix camera position
+    const arcAlpha = 1.5046653238154635;
+    const arcBeta = 1.5296884191499718;
+    const arcRadius = 44.649908575154164;
 
     const player_cam = new ArcRotateCamera(
-      "PlayerCamera", 0, 1, 10, new Vector3(0, 1, 0), this._scene
+      "PlayerCamera", arcAlpha, arcBeta, arcRadius, new Vector3(0, 0, 0), this._scene
     );
-    player_cam.attachControl();
+    //player_cam.attachControl();
     player_cam.minZ = 0.5;
     player_cam.speed = 0.1;
     player_cam.wheelPrecision = 10;
@@ -159,13 +163,20 @@ export class Game {
     );
 
     camAnim.setKeys([
-      { frame: 0, value: new Vector3(-60, 180, -100) },
-      { frame: 12 * fps, value: new Vector3(-60, 170, 40) },
-      { frame: 17 * fps, value: new Vector3(-80, 150, 60) },
-      { frame: 22 * fps, value: new Vector3(-70, 120, 70) },
-      { frame: 27 * fps, value: new Vector3(-10, 85, 100) },
-      { frame: 32 * fps, value: new Vector3(-40, 30, 100) },
-      { frame: 36 * fps, value: new Vector3(-25, 10, 30) },
+      { frame: 0, value: new Vector3(-100, 220, -80) },
+      { frame: 5 * fps, value: new Vector3(-55, 170, 45) },
+      { frame: 5 * fps, value: new Vector3(-75, 170, 30) },
+      { frame: 7 * fps, value: new Vector3(-75, 130, 40) },
+      { frame: 10 * fps, value: new Vector3(-15, 115, 50) },
+      { frame: 10 * fps, value: new Vector3(5, 110, 30) },
+      { frame: 12 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 13 * fps, value: new Vector3(13, 75, 0) },
+      { frame: 15 * fps, value: new Vector3(-7, 100, 30) },
+      { frame: 17 * fps, value: new Vector3(-40, 70, 60) },
+      { frame: 20 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 21 * fps, value: new Vector3(-32, 150, 120) },
+      { frame: 25 * fps, value: new Vector3(-32, 35, 120) },
+      { frame: 26 * fps, value: new Vector3(-32, 35, 120) },
     ]);
 
     cam.animations.push(camAnim);
@@ -181,13 +192,17 @@ export class Game {
   // --- Playing :
 
   private static atPos(pos: Vector3): Kind {
-    const ray = this.scene.createPickingRay(
-      pos.x, pos.y,
-      Matrix.Identity(),
-      Game.scene.getCameraByName("PlayerCamera")
-    );
+    const ray = Game.cameras["PlayerCamera"].getForwardRay(100);
+    
+    //this.scene.createPickingRay(
+    //  pos.x, pos.y,
+    //  Matrix.Identity(),
+    //  Game.scene.getCameraByName("PlayerCamera")
+    //);
 
-    const hit = Game.scene.pickWithRay(ray);
+    //let predicate = (mesh: AbstractMesh) => mesh != Game.player.model.mesh;
+
+    const hit = Game.scene.pickWithRay(ray);//, predicate);
     if (!hit || !hit.pickedMesh) return "Decors";
     const pickedMesh = hit.pickedMesh;
 
@@ -205,36 +220,50 @@ export class Game {
     return "Decors";
   }
 
-  private static switchMoves(key: string) {
+  private static switchMoves(key: string, shiftPressed: boolean) {
     switch (key) {
-      case "c": Game.player.anim.climb(); break;
-      case "g": Game.player.anim.hopLeft(); break;
-      case "d": Game.player.anim.hopRight(); break;
-      case "l": Game.player.anim.shimmyLeft(); break;
-      case "r": Game.player.anim.shimmyRight(); break;
+      case "ArrowUp"   : Game.player.anim.climbUp(); break;
+      case "ArrowDown" : Game.player.anim.climbDown(); break;
+      case "ArrowLeft" : Game.player.anim.moveLeft(shiftPressed); break;
+      case "ArrowRight": Game.player.anim.moveRight(shiftPressed); break;
     }
   }
 
   private static initPlayerActions() {
     //* Inputs :
-    let needUpdates = false;
-    let key_pressed: "h"|"c"|"r"|"l"|"d"|"g"|null = null;
+    let key_pressed: "ArrowUp"|"ArrowDown"|"ArrowLeft"|"ArrowRight"|null = null;
+    let shiftPressed: boolean = false
 
     Game.scene.actionManager = new ActionManager(Game.scene);
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
-      ActionManager.OnKeyDownTrigger, 
-      (event) => [key_pressed, needUpdates] = [event.sourceEvent.key, true]
+      ActionManager.OnKeyDownTrigger,
+      (event) => {
+        console.log(event.sourceEvent.key);
+        let key = event.sourceEvent.key;
+        if (key == "Shift") {
+          shiftPressed = true;
+          return;
+        }
+        key_pressed = key;
+      }
     ));
     Game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyUpTrigger,
-      (_event) => key_pressed = null,
+      (event) => {
+        let key = event.sourceEvent.key;
+        if (key == "Shift") {
+          shiftPressed = false;
+          return;
+        }
+        key_pressed = null;
+      },
     ))
 
 
     //* Logic :
-    let isMoving: boolean = false;
-    let isFalling: boolean;
-    let isSliding: boolean;
+    let isMoving = true;
+    let isFalling = false;
+    let isSliding = false;
 
     const player_mesh: AbstractMesh = Game.player.model.mesh;
 
@@ -243,36 +272,51 @@ export class Game {
     };
 
     Game.scene.onBeforeRenderObservable.add(() => {
-      if (!needUpdates && !isFalling && !isSliding)
-        return;
 
-      isFalling = Game.atPos(player_mesh.position) == "Decors";
-      isSliding = Game.atPos(player_mesh.position) == "SlipperyObjects";
-
-      // Gravity :
-      if (isFalling || isSliding) {
+      if (isFalling) {
         Game.player.anim.hang();
 
-        if (isFalling) {
-          player_mesh.position.y -= 1;
-          isFalling = !(
-            key_pressed == "h" && isHoldable(Game.atPos(player_mesh.position))
-          );
+        if (key_pressed == "ArrowUp")
+          isFalling = !isHoldable(Game.atPos(player_mesh.position));
+
+        player_mesh.position.y -= 1;
+        return;
+      }
+
+      if (isSliding) {
+        Game.player.anim.hang();
+
+        if (key_pressed && !["ArrowUp", "ArrowDown"].includes(key_pressed)) {
+          Game.switchMoves(key_pressed, shiftPressed);
+          isMoving = true;
+        }
+        
+        const kind = Game.atPos(player_mesh.position);
+        if(isHoldable(kind)) {
+          isSliding = false;
+          return;
+        }
+
+        if (kind == "Decors") {
+          isFalling = true;
+          isSliding = false;
           return;
         }
 
         player_mesh.position.y -= 0.5;
+        return;
       }
 
       if(key_pressed) {
-        isMoving = true;
-        Game.switchMoves(key_pressed);
-      } else if(isMoving) {
-        isMoving = false;
+        isMoving = true
+        Game.switchMoves(key_pressed, shiftPressed);
+        const kind = Game.atPos(player_mesh.position);
+        isFalling = kind == "Decors";
+        isSliding = kind == "SlipperyObjects";
+      } else if (isMoving) {
+        isMoving = false
         Game.player.anim.hang();
       }
-
-      needUpdates = false;
     });
   }
 }

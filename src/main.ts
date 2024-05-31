@@ -13,10 +13,10 @@ const MENU = document.querySelector("nav")!;
 async function startGame() {
   MENU.classList.add("notplaying");
 
-  //Game.engine.displayLoadingUI();
+  Game.engine.displayLoadingUI();
   await Game.buildScene();
   await Game.initPlayer();
-  //Game.engine.hideLoadingUI();
+  Game.engine.hideLoadingUI();
 
   Game.playCinematic();
 
