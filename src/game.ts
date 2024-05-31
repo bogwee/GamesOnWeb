@@ -79,14 +79,11 @@ export class Game {
     //* Cinematic Camera :
 
     const cinematic_cam = new FreeCamera(
-      "CinematicCamera", new Vector3(10, 2, -10), this._scene
+      "CinematicCamera", new Vector3(-100, 220, -80), this._scene
     );
     cinematic_cam.minZ = 0.5;
     cinematic_cam.speed = 0.5;
     cinematic_cam.rotation._y = Math.PI;
-    cinematic_cam.position._x = -60;
-    cinematic_cam.position._y = 180;
-    cinematic_cam.position._z = -100;
 
     this._cameras["CinematicCamera"] = cinematic_cam;
 
@@ -98,9 +95,8 @@ export class Game {
     const arcRadius = 44.649908575154164 + (47.23366662045099 - 44.649908575154164);
 
     const player_cam = new ArcRotateCamera(
-      "PlayerCamera", arcAlpha, arcBeta, arcRadius, new Vector3(0, 1, 0), this._scene
+      "PlayerCamera", arcAlpha, arcBeta, arcRadius, new Vector3(0, 0, 0), this._scene
     );
-    player_cam.attachControl();
     player_cam.minZ = 0.5;
     player_cam.speed = 0.1;
     player_cam.wheelPrecision = 10;

@@ -16,18 +16,6 @@ nav {
     align-items: center;
 }
 
-#setPanel {
-    grid-row: 4;
-    grid-column: 4;
-    position: relative;
-    vertical-align: top;
-    align-items: center;
-    display: flex;
-	flex-direction: column;
-	gap: 5em;
-	padding: 1em 0;
-}
-
 .slider {
     width: 400px;
 }
@@ -65,8 +53,4 @@ nav {
 
 #infoBody {
     background-image: url("../assets/images/info.png");
-}
-
-#setBody {
-    background-image: url("../assets/images/settings.png");
 }
