@@ -6,7 +6,7 @@ import type { AbstractMesh } from "@babylonjs/core";
 import { SceneLoader } from "@babylonjs/core";
 import '@babylonjs/loaders';
 
-import { ActionManager, ExecuteCodeAction, Matrix } from "@babylonjs/core";
+import { ActionManager, ExecuteCodeAction } from "@babylonjs/core";
 
 //# Local :
 import { Player } from "./player.ts";
@@ -78,14 +78,11 @@ export class Game {
     //* Cinematic Camera :
 
     const cinematic_cam = new FreeCamera(
-      "CinematicCamera", new Vector3(10, 2, -10), this._scene
+      "CinematicCamera", new Vector3(-100, 220, -80), this._scene
     );
     cinematic_cam.minZ = 0.5;
     cinematic_cam.speed = 0.5;
     cinematic_cam.rotation._y = Math.PI;
-    cinematic_cam.position._x = -60;
-    cinematic_cam.position._y = 180;
-    cinematic_cam.position._z = -100;
 
     this._cameras["CinematicCamera"] = cinematic_cam;
 
@@ -180,7 +177,7 @@ export class Game {
     ]);
 
     cam.animations.push(camAnim);
-    await this.scene.beginAnimation(cam, 0, 36 * fps).waitAsync();
+    await this.scene.beginAnimation(cam, 0, 18 * fps).waitAsync();
 
     Game.scene.activeCamera = Game.cameras["PlayerCamera"];
   }

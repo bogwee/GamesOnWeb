@@ -68,22 +68,20 @@ export class Player {
         SHIMMY_RIGHT_ANIM.stop();
         HOP_LEFT_ANIM.stop();
         HOP_RIGHT_ANIM.stop();
+        CLIMB_DOWN_ANIM.stop();
       },
 
       climbUp: ()=>{
-        /*DEBUG ::*/ console.log("ccccccc");
         CLIMB_UP_ANIM.start(true, 1, CLIMB_UP_ANIM.from, CLIMB_UP_ANIM.to, false);
         player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(0.2));
       },
 
       climbDown: ()=>{
-        /*DEBUG ::*/ console.log("ccccccc");
         CLIMB_DOWN_ANIM.start(true, 1, CLIMB_DOWN_ANIM.from, CLIMB_DOWN_ANIM.to, false);
         player_mesh.moveWithCollisions(player_mesh.up.scaleInPlace(-0.2));
       },
 
       moveLeft: (shiftPressed: boolean)=>{
-        /*DEBUG ::*/ console.log("ccccccc");
         if (shiftPressed) {
           HOP_LEFT_ANIM.start(true, 1, HOP_LEFT_ANIM.from, HOP_LEFT_ANIM.to, false);
           player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(-0.2));
@@ -94,7 +92,6 @@ export class Player {
       },
 
       moveRight: (shiftPressed: boolean)=>{
-        /*DEBUG ::*/ console.log("ccccccc");
         if (shiftPressed) {
           HOP_RIGHT_ANIM.start(true, 1, HOP_RIGHT_ANIM.from, HOP_RIGHT_ANIM.to, false);
           player_mesh.moveWithCollisions(player_mesh.right.scaleInPlace(0.2));
